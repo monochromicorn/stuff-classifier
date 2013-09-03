@@ -4,6 +4,7 @@ SimpleCov.start
 require 'turn'
 require 'minitest/autorun'
 require 'stuff-classifier'
+require 'debugger'
 
 Turn.config do |c|
  # use one of output formats:
@@ -13,7 +14,7 @@ Turn.config do |c|
  # :pretty   - new pretty reporter
  # :marshal  - dump output as YAML (normal run mode only)
  # :cue      - interactive testing
- c.format  = :outline
+ c.format  = :cue #:outline
  # turn on invoke/execute tracing, enable full backtrace
  c.trace   = true
  # use humanized test names (works only with :outline format)
@@ -46,4 +47,12 @@ class TestBase < MiniTest::Unit::TestCase
   def should_be(category, value)
     assert_equal category, @classifier.classify(value), value
   end
+
+  def scores_should_be(scores, value)
+    assert_equal scores, @classifier.scores(value), value
+  end
+
+  def scores_with_categories_should_be(scores, value, categories)
+    assert_equal scores, @classifier.scores(value, {:categories => categories}), value
+  end  
 end
