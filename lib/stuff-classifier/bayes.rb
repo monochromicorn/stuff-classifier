@@ -21,7 +21,6 @@ class StuffClassifier::Bayes < StuffClassifier::Base
     word_count(word, cat).to_f / total_words_in_cat
   end
 
-
   def word_weighted_average(word, cat, opts={})
     func = opts[:func]
 
@@ -56,6 +55,26 @@ class StuffClassifier::Bayes < StuffClassifier::Base
     probs.map{|k,v| [k,v]}.sort{|a,b| b[1] <=> a[1]}
   end
 
+  def scores(text)
+    _scores = Hash[*(cat_scores(text).flatten)]
+  end
+
+  #assumes a and b are NOT mutually exclusive
+  def or_score(text, *categores)
+    _scores = scores(text)
+    
+    total_probability = categores.inject(0) {|sum, categore| sum + (_scores[categore] || 0.0)}
+    overlap = categores.inject(1) {|product, categore| product * (_scores[categore] || 0.0)}
+
+    total_probability - overlap
+  end
+
+  #assumes a and b are NOT mutually exclusive
+  def and_score(text, *categores)
+    _scores = scores(text)
+
+    categores.inject(1) {|product, categore| product * (_scores[categore] || 0.0)}
+  end  
 
   def word_classification_detail(word)
 
