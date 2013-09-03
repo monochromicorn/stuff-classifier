@@ -52,5 +52,28 @@ class Test003NaiveBayesClassification < TestBase
     should_be :dog, "Who ate my meat?"
   end
 
+  def test_scores
+    scores = {:cat=>0.007260536398467432, :dog=>0.004046934865900383}
+    assert_equal scores, @classifier.scores("This test is about cats.")
+  end
 
+  def test_or_score
+    dog_probability = @classifier.scores("This test is about cats, and maybe dogs.")[:dog]
+    cat_probability = @classifier.scores("This test is about cats, and maybe dogs.")[:cat]
+
+    dog_or_cat_probability = @classifier.or_score("This test is about cats, and maybe dogs.", :dog, :cat)
+
+    assert_equal (dog_probability + cat_probability - (dog_probability * cat_probability)),
+      dog_or_cat_probability
+  end
+
+  def test_and_score
+    dog_probability = @classifier.scores("This test is about cats, and maybe dogs.")[:dog]
+    cat_probability = @classifier.scores("This test is about cats, and maybe dogs.")[:cat]
+
+    dog_and_cat_probability = @classifier.and_score("This test is about cats, and maybe dogs.", :dog, :cat)
+
+    assert_equal (dog_probability * cat_probability),
+      dog_and_cat_probability    
+  end
 end
