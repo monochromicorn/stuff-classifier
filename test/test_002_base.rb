@@ -35,4 +35,23 @@ class Test002Base < TestBase
 
   end
 
+  def test_attributes
+    attrib_keys = [:weight, :assumed_prob, :version, :training_count, :min_prob, :word_list, 
+        :category_list, :thresholds].sort
+
+    assert_equal @cls.attributes.keys.sort , attrib_keys
+  end
+
+  def test_update_attributes
+    statement = "It eats mice and birds"
+
+    #A new instance of classifier will have no probabilities
+    a_cls = StuffClassifier::Bayes.new("Another Cats or Dogs classifer")  
+    assert a_cls.scores(statement)[:cat] != @cls.scores(statement)[:cat]
+
+    #After loading the attributes from the other instance their output probabilities 
+    #should be equivalent
+    a_cls.update_attributes(@cls.attributes)
+    assert_equal a_cls.scores(statement)[:cat], @cls.scores(statement)[:cat]
+  end
 end

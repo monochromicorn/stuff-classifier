@@ -43,6 +43,7 @@ class StuffClassifier::Base
       @storage.purge_state(self)
     end
 
+
     # This value can be set during initialization or overrided after load_state
     @thresholds = opts[:thresholds] || {}
     @min_prob = opts[:min_prob] || 0.0
@@ -50,7 +51,25 @@ class StuffClassifier::Base
 
     @ignore_words = nil
     @tokenizer = StuffClassifier::Tokenizer.new(opts)
-    
+
+    #This represents all the attributes needed to store and load the state 
+    #of this object
+    @attribute_vars = [:weight, :assumed_prob, :version, 
+      :training_count, :min_prob, :word_list, :category_list, 
+      :thresholds]
+  end
+
+  def update_attributes(attrib = {})
+    attrib.each do |var, val|
+      instance_variable_set "@#{var}", val
+    end
+  end
+
+  def attributes
+    @attribute_vars.inject({}) do |hsh, elem|
+      hsh[elem] = instance_variable_get("@#{elem}")
+      hsh
+    end
   end
 
   def incr_word(word, category)
@@ -186,5 +205,5 @@ class StuffClassifier::Base
         inst
       end
     end
-  end
+  end 
 end
